@@ -17,9 +17,6 @@ export async function initApp(initConfig: AppInitConfig) {
     .init(hardwareAccelerationMode({enable: false}))
     .init(autoUpdater())
 
-    // Install DevTools extension if needed
-    // .init(chromeDevToolsExtension({extension: 'VUEJS3_DEVTOOLS'}))
-
     // Security
     .init(allowInternalOrigins(
       new Set(initConfig.renderer instanceof URL ? [initConfig.renderer.origin] : []),
@@ -41,6 +38,14 @@ export async function initApp(initConfig: AppInitConfig) {
           : [],
       )),
     );
+
+  if (import.meta.env.DEV) {
+    // Install DevTools extension if dev
+    const {chromeDevToolsExtension} = await import('./modules/ChromeDevToolsExtension.js')
+    moduleRunner
+      .init(chromeDevToolsExtension({extension: 'REACT_DEVELOPER_TOOLS'}))
+      .init(chromeDevToolsExtension({extension: 'REDUX_DEVTOOLS'}))
+  }
 
   await moduleRunner;
 }
